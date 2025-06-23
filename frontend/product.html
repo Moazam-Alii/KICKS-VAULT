@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KICKS-VAULT | Sneaker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <style>
+    .product-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Marketplace</a>
+    <a href="add.html">Sell Sneaker</a>
+  </nav>
+
+  <main class="product-view">
+    <div class="product-card">
+      <div id="sneakerImgContainer"></div>
+
+      <div class="info">
+        <h2 id="sneakerName">Sneaker Name</h2>
+        <p><strong>SKU:</strong> <span id="sku"></span></p>
+        <p><strong>Price:</strong> <span id="price"></span> SOL</p>
+        <p><strong>Owner:</strong> <span id="owner"></span></p>
+
+        <div id="mintHistory">
+          <!-- Mint history will be added here -->
+        </div>
+
+        <button id="buyBtn">Buy Now</button>
+        <p id="status"></p>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

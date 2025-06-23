@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KICKS-VAULT - Marketplace</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+
+  <style>
+    .banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin: 30px 0 20px;
+      font-size: 2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KICKS-VAULT</h1>
+    <nav>
+      <a href="index.html" class="active">Marketplace</a>
+      <a href="add.html">Sell Your Kicks</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 🔥 Banner Section -->
+    <section class="banner">
+      <video class="banner-video" autoplay muted loop playsinline>
+        <source src="/static/banner/bannerv.mp4" type="video/mp4" />
+      </video>
+    </section>
+
+    <!-- 🏷️ Section Heading -->
+    <h2 class="section-heading">LISTED KICKS</h2>
+
+    <!-- 👟 Sneaker Grid -->
+    <section class="sneaker-grid" id="sneakerGrid">
+      <!-- Sneakers will be loaded here via JS -->
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

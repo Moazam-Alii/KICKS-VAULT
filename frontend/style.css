@@ -1,0 +1,195 @@
+/* Global styles */
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: #000;
+  color: white;
+}
+
+header {
+  background: #111;
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid #28a745;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
+
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #fff;
+  background: #222;
+  padding: 10px 18px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+nav a:hover,
+nav a.active {
+  background: #28a745;
+}
+
+main {
+  padding: 40px;
+  background-color: transparent;
+}
+
+/* Sneaker Grid */
+.sneaker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.card {
+  background: #111;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 16px;
+  background-color: transparent;
+  color: white;
+}
+
+.card-body h4,
+.card-body p {
+  margin: 0 0 5px;
+  font-size: 14px;
+  color: white;
+}
+
+/* Upload Form */
+.upload-section {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  color: white;
+}
+
+.upload-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: white;
+}
+
+.upload-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: white;
+}
+
+.upload-section input,
+.upload-section button {
+  padding: 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.upload-section button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.upload-section button:hover {
+  background: #218838;
+}
+
+#status {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Product View */
+.product-view {
+  max-width: 900px;
+  margin: 0 auto;
+  background: transparent;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  color: white;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.product-card img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.product-card .info p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: white;
+}
+
+.product-card .info a {
+  color: white;
+  text-decoration: none;
+}
+
+.banner {
+  width: 100%;
+  overflow: hidden;
+}
+
+.banner-video {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.label {
+  color: #32CD32; /* or use your custom green */
+  font-weight: bold;
+}
+
+.value {
+  color: white;
+}

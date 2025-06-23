@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sell Your Kicks | KICKS-VAULT</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>KICKS-VAULT</h1>
+    <nav>
+      <a href="index.html">Marketplace</a>
+      <a href="add.html" class="active">Sell Your Kicks</a>
+    </nav>
+  </header>
+
+  <main class="upload-section">
+    <h2>List Your Sneaker</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="text" name="sku" placeholder="Enter SKU (e.g., AJ1-RED)" required />
+      <input type="text" name="name" placeholder="Sneaker Name (optional)" />
+      <input type="file" name="images" accept="image/*" multiple required />
+      <input type="number" name="price" placeholder="Price (in SOL)" min="0" step="0.01" required />
+      <input type="text" name="wallet" placeholder="Your Solana Wallet Address" required />
+      <button type="submit">Verify & Mint</button>
+    </form>
+    <div id="status"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
