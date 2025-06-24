@@ -7,13 +7,110 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
-    .product-img {
-      width: 100%;
-      max-height: 400px;
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      background: #111;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .product-view {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      display: flex;
+      gap: 40px;
+    }
+
+    .left-column {
+      display: flex;
+      gap: 20px;
+    }
+
+    .thumbnail-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .thumbnail-column img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border 0.2s ease;
+    }
+
+    .thumbnail-column img:hover {
+      border-color: white;
+    }
+
+    .main-image {
+      width: 400px;
+      height: 400px;
       object-fit: contain;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .product-info {
+      flex: 1;
+      padding-top: 10px;
+    }
+
+    .product-info h2 {
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+    }
+
+    .product-info p {
+      margin: 5px 0;
+    }
+
+    #bidBtn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      background: white;
+      color: black;
+      cursor: pointer;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      transition: background 0.3s ease;
+    }
+
+    #bidBtn:hover {
+      background: #ccc;
+    }
+
+    a {
+      color: #fff;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -24,25 +121,72 @@
   </nav>
 
   <main class="product-view">
-    <div class="product-card">
-      <div id="sneakerImgContainer"></div>
-
-      <div class="info">
-        <h2 id="sneakerName">Sneaker Name</h2>
-        <p><strong>SKU:</strong> <span id="sku"></span></p>
-        <p><strong>Price:</strong> <span id="price"></span> SOL</p>
-        <p><strong>Owner:</strong> <span id="owner"></span></p>
-
-        <div id="mintHistory">
-          <!-- Mint history will be added here -->
-        </div>
-
-        <button id="buyBtn">Buy Now</button>
-        <p id="status"></p>
+    <div class="left-column">
+      <div class="thumbnail-column" id="thumbnailContainer">
+        <!-- Thumbnails go here -->
       </div>
+      <img id="mainImage" class="main-image" src="" alt="Sneaker" />
+    </div>
+
+    <div class="product-info">
+      <h2 id="sneakerName">Sneaker Name</h2>
+      <p><strong>SKU:</strong> <span id="sku"></span></p>
+      <p><strong>Price:</strong> <span id="price"></span> SOL</p>
+      <p><strong>Owner:</strong> <span id="owner"></span></p>
+
+      <div id="mintHistory"></div>
+
+      <button id="bidBtn">Bid Now</button>
+      <p id="status"></p>
     </div>
   </main>
 
-  <script src="app.js"></script>
+  <script>
+    const BACKEND_URL = "http://localhost:5000";
+    const id = new URLSearchParams(window.location.search).get("id");
+
+    if (id) {
+      fetch(`${BACKEND_URL}/sneaker/${id}`)
+        .then(res => res.json())
+        .then(sneaker => {
+          const mainImg = document.getElementById("mainImage");
+          mainImg.src = sneaker.image_urls[0];
+
+          const thumbContainer = document.getElementById("thumbnailContainer");
+          sneaker.image_urls.forEach((imgUrl) => {
+            const thumb = document.createElement("img");
+            thumb.src = imgUrl;
+            thumb.onclick = () => {
+              mainImg.src = imgUrl;
+            };
+            thumbContainer.appendChild(thumb);
+          });
+
+          document.getElementById("sneakerName").innerText = sneaker.name;
+          document.getElementById("sku").innerText = sneaker.sku;
+          document.getElementById("price").innerText = sneaker.price;
+          document.getElementById("owner").innerText = shortenWallet(sneaker.owner);
+
+          const historyDiv = document.getElementById("mintHistory");
+          if (Array.isArray(sneaker.mint_history)) {
+            sneaker.mint_history.forEach((mint, i) => {
+              const line = document.createElement("p");
+              line.innerHTML = `<strong>Mint ${i + 1}:</strong> 
+                <a href="https://explorer.solana.com/tx/${mint.mint_tx}?cluster=devnet" target="_blank">${mint.mint_tx}</a> 
+                (by ${shortenWallet(mint.owner)}, ${new Date(mint.date).toLocaleString()})`;
+              historyDiv.appendChild(line);
+            });
+          }
+        });
+
+      document.getElementById("bidBtn").onclick = () => {
+        window.location.href = `bid.html?id=${id}`;
+      };
+    }
+
+    function shortenWallet(addr) {
+      return addr ? addr.slice(0, 4) + "..." + addr.slice(-4) : "N/A";
+    }
+  </script>
 </body>
 </html>

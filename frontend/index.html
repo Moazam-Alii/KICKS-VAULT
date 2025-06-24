@@ -5,26 +5,17 @@
   <title>KICKS-VAULT - Marketplace</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-
-  <style>
-    .banner img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .section-heading {
-      text-align: center;
-      margin: 30px 0 20px;
-      font-size: 2em;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <header>
     <h1>KICKS-VAULT</h1>
     <nav>
+      <div class="search-container">
+        <i class="fas fa-shoe-prints search-icon" onclick="toggleSearch()"></i>
+        <input type="text" id="searchBox" class="search-input" placeholder="Search sneakers..." oninput="suggestSneakers()" />
+        <div id="suggestions" class="search-suggestions"></div>
+      </div>
       <a href="index.html" class="active">Marketplace</a>
       <a href="add.html">Sell Your Kicks</a>
     </nav>
@@ -38,15 +29,88 @@
       </video>
     </section>
 
-    <!-- 🏷️ Section Heading -->
     <h2 class="section-heading">LISTED KICKS</h2>
 
-    <!-- 👟 Sneaker Grid -->
     <section class="sneaker-grid" id="sneakerGrid">
       <!-- Sneakers will be loaded here via JS -->
+    </section>
+
+    <!-- 📸 Image Slider Section -->
+    <section class="slider-section">
+      <div class="slider-container">
+        <div class="slide fade">
+          <img src="/static/banner/s1.jpg" alt="Slide 1">
+        </div>
+        <div class="slide fade">
+          <img src="/static/banner/s2.jpg" alt="Slide 2">
+        </div>
+        <div class="slide fade">
+          <img src="/static/banner/s3.jpg" alt="Slide 3">
+        </div>
+      </div>
     </section>
   </main>
 
   <script src="app.js"></script>
+  <script>
+    let allSneakers = [];
+
+    // Slideshow
+    let slideIndex = 0;
+    const showSlides = () => {
+      const slides = document.getElementsByClassName("slide");
+      for (let s of slides) s.style.display = "none";
+      slideIndex++;
+      if (slideIndex > slides.length) slideIndex = 1;
+      slides[slideIndex - 1].style.display = "block";
+      setTimeout(showSlides, 3000);
+    };
+    showSlides();
+
+    function toggleSearch() {
+      const input = document.getElementById("searchBox");
+      input.classList.toggle("visible");
+      document.getElementById("suggestions").classList.remove("visible");
+      if (input.classList.contains("visible")) input.focus();
+    }
+
+    async function suggestSneakers() {
+      const input = document.getElementById("searchBox").value.toLowerCase();
+      const suggestions = document.getElementById("suggestions");
+      suggestions.innerHTML = "";
+      suggestions.classList.remove("visible");
+
+      if (!allSneakers.length) {
+        const data = await fetch("http://localhost:5000/sneakers").then(res => res.json());
+        allSneakers = data;
+      }
+
+      const filtered = allSneakers.filter(s =>
+        s.name.toLowerCase().includes(input) || s.sku.toLowerCase().includes(input)
+      );
+
+      if (input && filtered.length > 0) {
+        suggestions.classList.add("visible");
+        filtered.slice(0, 5).forEach(s => {
+          const item = document.createElement("div");
+          item.textContent = `${s.name}`;
+          item.onclick = () => {
+            window.location.href = `product.html?id=${s._id}`;
+          };
+          suggestions.appendChild(item);
+        });
+      }
+    }
+
+    window.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) {
+        document.getElementById("suggestions").classList.remove("visible");
+      }
+    });
+
+    function shortenWallet(addr) {
+      return addr ? addr.slice(0, 4) + "..." + addr.slice(-4) : "N/A";
+    }
+  </script>
 </body>
 </html>
