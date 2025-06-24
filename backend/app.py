@@ -80,9 +80,13 @@ def upload_sneaker():
     name = request.form.get('name')
     owner = request.form.get('wallet')
     price = request.form.get('price')
+    size = request.form.get('size')
+    color = request.form.get('color')
+    bid_start = request.form.get('bid_start')
+    bid_end = request.form.get('bid_end')
     image_files = request.files.getlist('images')
 
-    if not all([sku, name, owner, price]) or not image_files or len(image_files) < 1:
+    if not all([sku, name, owner, price, size, color, bid_start, bid_end]) or not image_files or len(image_files) < 1:
         return jsonify({"message": "Missing required fields or images"}), 400
 
     if len(image_files) > 5:
@@ -115,6 +119,10 @@ def upload_sneaker():
             "image_urls": image_urls,
             "owner": owner,
             "price": float(price),
+            "size": size,
+            "color": color,
+            "bid_start": bid_start,
+            "bid_end": bid_end,
             "mint_history": [
                 {
                     "mint_tx": mint_tx,

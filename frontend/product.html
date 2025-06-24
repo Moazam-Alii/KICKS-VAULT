@@ -16,12 +16,13 @@
     }
 
     nav {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      padding: 15px;
-      background: #111;
-    }
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 15px;
+  background: #111;
+  border-bottom: 4px solid #28a745;
+}
 
     nav a {
       color: white;
@@ -88,6 +89,15 @@
       margin: 5px 0;
     }
 
+    .label {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .value {
+      color: white;
+    }
+
     #bidBtn {
       margin-top: 20px;
       padding: 12px 24px;
@@ -122,17 +132,19 @@
 
   <main class="product-view">
     <div class="left-column">
-      <div class="thumbnail-column" id="thumbnailContainer">
-        <!-- Thumbnails go here -->
-      </div>
+      <div class="thumbnail-column" id="thumbnailContainer"></div>
       <img id="mainImage" class="main-image" src="" alt="Sneaker" />
     </div>
 
     <div class="product-info">
       <h2 id="sneakerName">Sneaker Name</h2>
-      <p><strong>SKU:</strong> <span id="sku"></span></p>
-      <p><strong>Price:</strong> <span id="price"></span> SOL</p>
-      <p><strong>Owner:</strong> <span id="owner"></span></p>
+      <p><span class="label">SKU:</span> <span id="sku" class="value"></span></p>
+      <p><span class="label">Price:</span> <span id="price" class="value"></span> SOL</p>
+      <p><span class="label">Owner:</span> <span id="owner" class="value"></span></p>
+      <p><span class="label">Size:</span> <span id="size" class="value"></span></p>
+      <p><span class="label">Color:</span> <span id="color" class="value"></span></p>
+      <p><span class="label">Bid Start:</span> <span id="bidStart" class="value"></span></p>
+      <p><span class="label">Bid End:</span> <span id="bidEnd" class="value"></span></p>
 
       <div id="mintHistory"></div>
 
@@ -166,12 +178,16 @@
           document.getElementById("sku").innerText = sneaker.sku;
           document.getElementById("price").innerText = sneaker.price;
           document.getElementById("owner").innerText = shortenWallet(sneaker.owner);
+          document.getElementById("size").innerText = sneaker.size || "N/A";
+          document.getElementById("color").innerText = sneaker.color || "N/A";
+          document.getElementById("bidStart").innerText = sneaker.bid_start || "N/A";
+          document.getElementById("bidEnd").innerText = sneaker.bid_end || "N/A";
 
           const historyDiv = document.getElementById("mintHistory");
           if (Array.isArray(sneaker.mint_history)) {
             sneaker.mint_history.forEach((mint, i) => {
               const line = document.createElement("p");
-              line.innerHTML = `<strong>Mint ${i + 1}:</strong> 
+              line.innerHTML = `<span class="label">Mint ${i + 1}:</span> 
                 <a href="https://explorer.solana.com/tx/${mint.mint_tx}?cluster=devnet" target="_blank">${mint.mint_tx}</a> 
                 (by ${shortenWallet(mint.owner)}, ${new Date(mint.date).toLocaleString()})`;
               historyDiv.appendChild(line);
