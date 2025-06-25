@@ -295,3 +295,79 @@ main {
       background: #28a745;
       color: black;
     }
+
+    /* Footer Styles */
+.site-footer {
+  border-top: 4px solid #28a745;
+  background: #000;
+  padding: 30px 0;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  background: #111;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.footer-link:hover {
+  background: #28a745;
+  color: black;
+}
+.futuristic-box {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  background: #000;
+}
+
+.box-content {
+  background: #111;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 900px;
+  width: 100%;
+  color: white;
+  box-shadow: 0 0 40px rgba(40, 167, 69, 0.3);
+  font-family: 'Orbitron', sans-serif;
+}
+
+.box-content h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #28a745;
+}
+
+.box-content p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: white;
+}
+.green-heading {
+  display: block;
+  font-weight: bold;
+  color: #28a745;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+
+.box-content a.footer-link {
+  margin-top: 30px;
+  display: inline-block;
+}
