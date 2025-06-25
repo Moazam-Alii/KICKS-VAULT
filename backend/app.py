@@ -9,7 +9,13 @@ from db import sneakers  # Ensure this connects correctly
 from cnn_model import verify_sneaker
 from mint import mint_nft_on_solana
 from wallets_utils import transfer_ownership
+import smtplib
+from email.mime.text import MIMEText
+import smtplib
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
 
+load_dotenv()
 # 🔧 Disable default static folder
 app = Flask(__name__, static_folder=None)
 CORS(app)
@@ -24,6 +30,39 @@ TMP_DIR = os.path.join(BASE_DIR, 'tmp')
 # Ensure folders exist
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(TMP_DIR, exist_ok=True)
+
+def send_email_notification(to_email, sneaker_name, sku):
+    try:
+        sender_email = "kicksvault99@gmail.com"
+        app_password = "dylspkywtuhvsdel"
+        
+        subject = "🎉 Your Sneaker is Verified and Listed!"
+        body = f"""
+        Hi there,
+
+        Congratulations! Your sneaker '{sneaker_name}' (SKU: {sku}) has been verified as authentic and successfully listed on KICKS-VAULT.
+
+        Thank you for using our platform.
+
+        – Team KICKS-VAULT
+        """
+
+        msg = MIMEText(body)
+        msg["Subject"] = subject
+        msg["From"] = sender_email
+        msg["To"] = to_email
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, to_email, msg.as_string())
+        
+        print(f"[EMAIL] Sent to {to_email}")
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+
+
+
+
 
 # Serve frontend
 @app.route('/')
@@ -79,14 +118,23 @@ def upload_sneaker():
     sku = request.form.get('sku')
     name = request.form.get('name')
     owner = request.form.get('wallet')
+    email = request.form.get('email')  # ✅ New email field
     price = request.form.get('price')
     size = request.form.get('size')
     color = request.form.get('color')
-    bid_start = request.form.get('bid_start')
-    bid_end = request.form.get('bid_end')
+
+    # Parse ISO datetime format
+    bid_start_raw = request.form.get('bid_start')
+    bid_end_raw = request.form.get('bid_end')
+    try:
+        bid_start = datetime.fromisoformat(bid_start_raw).isoformat()
+        bid_end = datetime.fromisoformat(bid_end_raw).isoformat()
+    except Exception:
+        return jsonify({"message": "Invalid datetime format"}), 400
+
     image_files = request.files.getlist('images')
 
-    if not all([sku, name, owner, price, size, color, bid_start, bid_end]) or not image_files or len(image_files) < 1:
+    if not all([sku, name, owner, email, price, size, color, bid_start, bid_end]) or not image_files or len(image_files) < 1:
         return jsonify({"message": "Missing required fields or images"}), 400
 
     if len(image_files) > 5:
@@ -118,6 +166,7 @@ def upload_sneaker():
             "name": name,
             "image_urls": image_urls,
             "owner": owner,
+            "email": email,  # ✅ store email
             "price": float(price),
             "size": size,
             "color": color,
@@ -133,6 +182,7 @@ def upload_sneaker():
         }
 
         insert_result = sneakers.insert_one(sneaker_doc)
+        send_email_notification(email, name, sku)
         print(f"[INFO] Sneaker saved with ID: {insert_result.inserted_id}")
 
         return jsonify({

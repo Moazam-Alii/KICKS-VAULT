@@ -17,18 +17,22 @@
 
   <main class="upload-section">
     <h2>List Your Sneaker</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data" action="/upload" method="POST">
       <input type="text" name="sku" placeholder="Enter SKU (e.g., AJ1-RED)" required />
       <input type="text" name="name" placeholder="Sneaker Name (optional)" />
       <input type="file" name="images" accept="image/*" multiple required />
       <input type="number" name="price" placeholder="Price (in SOL)" min="0" step="0.01" required />
       <input type="text" name="wallet" placeholder="Your Solana Wallet Address" required />
+      <input type="email" name="email" placeholder="Your Email Address" required />
       <input type="text" name="size" placeholder="Size (e.g., US 9 / UK 8)" required />
       <input type="text" name="color" placeholder="Color (e.g., Red/White)" required />
-      <label for="bid_start">Bid Start Date:</label>
-      <input type="date" name="bid_start" required />
-      <label for="bid_end">Bid End Date:</label>
-      <input type="date" name="bid_end" required />
+      
+      <label for="bid_start">Bid Start Date & Time:</label>
+      <input type="datetime-local" name="bid_start" required />
+      
+      <label for="bid_end">Bid End Date & Time:</label>
+      <input type="datetime-local" name="bid_end" required />
+      
       <button type="submit">Verify & Mint</button>
     </form>
     <div id="status"></div>
