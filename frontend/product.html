@@ -16,13 +16,13 @@
     }
 
     nav {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  padding: 15px;
-  background: #111;
-  border-bottom: 4px solid #28a745;
-}
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      background: #111;
+      border-bottom: 4px solid #28a745;
+    }
 
     nav a {
       color: white;
@@ -115,6 +115,34 @@
       background: #ccc;
     }
 
+    .bids-section {
+      margin-top: 40px;
+      border-top: 2px solid #28a745;
+      padding-top: 20px;
+    }
+
+    .bids-section h3 {
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+
+    .bids-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .bids-table th,
+    .bids-table td {
+      padding: 10px;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+
+    .bids-table th {
+      color: #ccc;
+      font-weight: bold;
+    }
+
     a {
       color: #fff;
     }
@@ -150,59 +178,96 @@
 
       <button id="bidBtn">Bid Now</button>
       <p id="status"></p>
+
+      <!-- BIDS SECTION -->
+      <div class="bids-section" id="bidsSection">
+        <h3>Bids on this Kick</h3>
+        <table class="bids-table" id="bidsTable">
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Price (SOL)</th>
+            </tr>
+          </thead>
+          <tbody id="bidsBody">
+            <!-- JS will inject bids here -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 
   <script>
-    const BACKEND_URL = "http://localhost:5000";
-    const id = new URLSearchParams(window.location.search).get("id");
+  const BACKEND_URL = "http://localhost:5000";
+  const id = new URLSearchParams(window.location.search).get("id"); // MongoDB _id
 
-    if (id) {
-      fetch(`${BACKEND_URL}/sneaker/${id}`)
-        .then(res => res.json())
-        .then(sneaker => {
-          const mainImg = document.getElementById("mainImage");
-          mainImg.src = sneaker.image_urls[0];
+  if (id) {
+    fetch(`${BACKEND_URL}/sneaker/${id}`)
+      .then(res => res.json())
+      .then(sneaker => {
+        const mainImg = document.getElementById("mainImage");
+        mainImg.src = sneaker.image_urls[0];
 
-          const thumbContainer = document.getElementById("thumbnailContainer");
-          sneaker.image_urls.forEach((imgUrl) => {
-            const thumb = document.createElement("img");
-            thumb.src = imgUrl;
-            thumb.onclick = () => {
-              mainImg.src = imgUrl;
-            };
-            thumbContainer.appendChild(thumb);
-          });
-
-          document.getElementById("sneakerName").innerText = sneaker.name;
-          document.getElementById("sku").innerText = sneaker.sku;
-          document.getElementById("price").innerText = sneaker.price;
-          document.getElementById("owner").innerText = shortenWallet(sneaker.owner);
-          document.getElementById("size").innerText = sneaker.size || "N/A";
-          document.getElementById("color").innerText = sneaker.color || "N/A";
-          document.getElementById("bidStart").innerText = sneaker.bid_start || "N/A";
-          document.getElementById("bidEnd").innerText = sneaker.bid_end || "N/A";
-
-          const historyDiv = document.getElementById("mintHistory");
-          if (Array.isArray(sneaker.mint_history)) {
-            sneaker.mint_history.forEach((mint, i) => {
-              const line = document.createElement("p");
-              line.innerHTML = `<span class="label">Mint ${i + 1}:</span> 
-                <a href="https://explorer.solana.com/tx/${mint.mint_tx}?cluster=devnet" target="_blank">${mint.mint_tx}</a> 
-                (by ${shortenWallet(mint.owner)}, ${new Date(mint.date).toLocaleString()})`;
-              historyDiv.appendChild(line);
-            });
-          }
+        const thumbContainer = document.getElementById("thumbnailContainer");
+        sneaker.image_urls.forEach((imgUrl) => {
+          const thumb = document.createElement("img");
+          thumb.src = imgUrl;
+          thumb.onclick = () => {
+            mainImg.src = imgUrl;
+          };
+          thumbContainer.appendChild(thumb);
         });
 
-      document.getElementById("bidBtn").onclick = () => {
-        window.location.href = `bid.html?id=${id}`;
-      };
-    }
+        document.getElementById("sneakerName").innerText = sneaker.name;
+        document.getElementById("sku").innerText = sneaker.sku;
+        document.getElementById("price").innerText = sneaker.price;
+        document.getElementById("owner").innerText = shortenWallet(sneaker.owner);
+        document.getElementById("size").innerText = sneaker.size || "N/A";
+        document.getElementById("color").innerText = sneaker.color || "N/A";
+        document.getElementById("bidStart").innerText = sneaker.bid_start || "N/A";
+        document.getElementById("bidEnd").innerText = sneaker.bid_end || "N/A";
 
-    function shortenWallet(addr) {
-      return addr ? addr.slice(0, 4) + "..." + addr.slice(-4) : "N/A";
-    }
-  </script>
+        const historyDiv = document.getElementById("mintHistory");
+        if (Array.isArray(sneaker.mint_history)) {
+          sneaker.mint_history.forEach((mint, i) => {
+            const line = document.createElement("p");
+            line.innerHTML = `<span class="label">Mint ${i + 1}:</span> 
+              <a href="https://explorer.solana.com/tx/${mint.mint_tx}?cluster=devnet" target="_blank">${mint.mint_tx}</a> 
+              (by ${shortenWallet(mint.owner)}, ${new Date(mint.date).toLocaleString()})`;
+            historyDiv.appendChild(line);
+          });
+        }
+
+        // ✅ Bid button links using _id
+        document.getElementById("bidBtn").onclick = () => {
+          window.location.href = `bid.html?id=${sneaker._id}`;
+        };
+
+        // ✅ Load bids using SKU
+        fetch(`${BACKEND_URL}/bids/${sneaker.sku}`)
+          .then(res => res.json())
+          .then(bids => {
+            const bidsBody = document.getElementById("bidsBody");
+            if (!bids.length) {
+              bidsBody.innerHTML = `<tr><td colspan="2">No bids yet.</td></tr>`;
+            } else {
+              bids.sort((a, b) => b.amount - a.amount);
+              bids.forEach(bid => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${shortenWallet(bid.wallet)}</td>
+                  <td>${bid.amount} SOL</td>`;
+                bidsBody.appendChild(row);
+              });
+            }
+          });
+      });
+  }
+
+  function shortenWallet(addr) {
+    return addr ? addr.slice(0, 4) + "..." + addr.slice(-4) : "N/A";
+  }
+</script>
+
 </body>
 </html>

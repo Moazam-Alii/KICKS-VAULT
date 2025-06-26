@@ -6,26 +6,54 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .sneaker-card {
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .sneaker-card:hover {
+      transform: scale(1.03);
+    }
+   
+    .sold-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .sneaker-card.sold:hover .sold-overlay {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
   <header style="display: flex; align-items: center; justify-content: space-between; padding: 0px 30px;">
-  <!-- Logo -->
-  <a href="index.html">
-    <img src="static/banner/logo.png" alt="KICKS-VAULT Logo" style="height: 120px;" />
-  </a>
+    <!-- Logo -->
+    <a href="index.html">
+      <img src="static/banner/logo.png" alt="KICKS-VAULT Logo" style="height: 120px;" />
+    </a>
 
-  <!-- Navigation -->
-  <nav style="display: flex; align-items: center; gap: 5px;padding-bottom: 0%;padding-left: 0%;">
-    <div class="search-container">
-      <i class="fas fa-shoe-prints search-icon" onclick="toggleSearch()"></i>
-      <input type="text" id="searchBox" class="search-input" placeholder="Search sneakers..." oninput="suggestSneakers()" />
-      <div id="suggestions" class="search-suggestions"></div>
-    </div>
-    <a href="index.html" class="active">Marketplace</a>
-    <a href="add.html">Sell Your Kicks</a>
-  </nav>
-</header>
-
+    <!-- Navigation -->
+    <nav style="display: flex; align-items: center; gap: 5px; padding-bottom: 0%; padding-left: 0%;">
+      <div class="search-container">
+        <i class="fas fa-shoe-prints search-icon" onclick="toggleSearch()"></i>
+        <input type="text" id="searchBox" class="search-input" placeholder="Search sneakers..." oninput="suggestSneakers()" />
+        <div id="suggestions" class="search-suggestions"></div>
+      </div>
+      <a href="index.html" class="active">Marketplace</a>
+      <a href="add.html">Sell Your Kicks</a>
+    </nav>
+  </header>
 
   <main>
     <!-- 🔥 Banner Section -->
@@ -44,21 +72,23 @@
     <!-- 📸 Image Slider Section -->
     <section class="slider-section">
       <div class="slider-container">
-        <div class="slide fade">
-          <img src="/static/banner/s1.jpg" alt="Slide 1">
-        </div>
-        <div class="slide fade">
-          <img src="/static/banner/s2.jpg" alt="Slide 2">
-        </div>
-        <div class="slide fade">
-          <img src="/static/banner/s3.jpg" alt="Slide 3">
-        </div>
+        <div class="slide fade"><img src="/static/banner/s1.jpg" alt="Slide 1"></div>
+        <div class="slide fade"><img src="/static/banner/s2.jpg" alt="Slide 2"></div>
+        <div class="slide fade"><img src="/static/banner/s3.jpg" alt="Slide 3"></div>
       </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <a href="aboutus.html" class="footer-link">About Us</a>
+      <a href="vision.html" class="footer-link">Our Vision</a>
+    </div>
+  </footer>
+
   <script>
+    const BACKEND_URL = "http://localhost:5000";
     let allSneakers = [];
 
     // Slideshow
@@ -87,7 +117,7 @@
       suggestions.classList.remove("visible");
 
       if (!allSneakers.length) {
-        const data = await fetch("http://localhost:5000/sneakers").then(res => res.json());
+        const data = await fetch(`${BACKEND_URL}/sneakers`).then(res => res.json());
         allSneakers = data;
       }
 
@@ -117,14 +147,52 @@
     function shortenWallet(addr) {
       return addr ? addr.slice(0, 4) + "..." + addr.slice(-4) : "N/A";
     }
-  </script>
-    <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <a href="aboutus.html" class="footer-link">About Us</a>
-      <a href="vision.html" class="footer-link">Our Vision</a>
-    </div>
-  </footer>
 
+    async function loadSneakers() {
+      const sneakerGrid = document.getElementById('sneakerGrid');
+      if (!sneakerGrid) return;
+
+      try {
+        const sneakers = await fetch(`${BACKEND_URL}/sneakers`).then(res => res.json());
+        if (!sneakers.length) {
+          sneakerGrid.innerHTML = "<p>No sneakers listed yet.</p>";
+          return;
+        }
+
+        sneakers.forEach(s => {
+          const card = document.createElement("div");
+          card.className = "card sneaker-card";
+
+          const previewImg = s.image_urls?.[0] || "/static/default.jpg";
+          const endTime = s.bid_end ? new Date(s.bid_end) : null;
+          const now = new Date();
+          const isSold = !endTime || endTime < now;
+
+          if (isSold) card.classList.add("sold");
+
+          card.innerHTML = `
+            <a href="product.html?id=${s._id}">
+              <img src="${previewImg}" alt="${s.sku}">
+              <div class="sold-overlay">SOLD</div>
+            </a>
+            <div class="card-body">
+              <h4>${s.name || s.sku}</h4>
+              <p><span class="label">Price:</span> <span class="value">${s.price || "N/A"} SOL</span></p>
+              <p><span class="label">Owner:</span> <span class="value">${shortenWallet(s.owner)}</span></p>
+            </div>
+          `;
+
+          sneakerGrid.appendChild(card);
+        });
+      } catch (err) {
+        sneakerGrid.innerHTML = "<p>Error loading sneakers.</p>";
+      }
+    }
+
+    // Load sneakers on page load
+    window.onload = () => {
+      loadSneakers();
+    };
+  </script>
 </body>
 </html>

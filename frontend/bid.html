@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KICKS-VAULT | Place Bid</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+  <style>
+    .bid-form-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #111;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(40, 167, 69, 0.2);
+    }
+
+    .bid-form-container h2,
+    .bid-times {
+      text-align: center;
+      color: #28a745;
+    }
+
+    .bid-form-container input,
+    .bid-form-container button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      font-size: 16px;
+    }
+
+    .option-btns {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+    }
+
+    .option-btns button {
+      flex: 1;
+      background: #222;
+      color: white;
+    }
+
+    .option-btns button.active {
+      background: #28a745;
+      color: black;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #28a745;
+      text-decoration: none;
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="bid-form-container">
+    <h2>Place Your Bid</h2>
+    <div class="bid-times" id="bidTimes"></div>
+
+    <form id="bidForm">
+      <input type="number" step="0.01" id="amount" placeholder="Enter bid amount (SOL)" required />
+      <input type="email" id="email" placeholder="Your email address" required />
+      <input type="text" id="wallet" placeholder="Your Solana wallet" required />
+
+      <div class="option-btns">
+        <button type="button" id="deliveryBtn">Delivery</button>
+        <button type="button" id="tradeBtn">Trade</button>
+      </div>
+
+      <button type="submit" id="submitBtn">Make Bid</button>
+      <div id="status"></div>
+    </form>
+
+    <a class="back-link" id="backBtn">← Back to Sneaker</a>
+  </main>
+
+  <script>
+    const BACKEND_URL = "http://localhost:5000";
+    const id = new URLSearchParams(window.location.search).get("id");
+
+    let option = null;
+    let sku = null;
+
+    fetch(`${BACKEND_URL}/sneaker/${id}`)
+      .then(res => res.json())
+      .then(sneaker => {
+        sku = sneaker.sku;
+
+        const bidStart = new Date(sneaker.bid_start);
+        const bidEnd = new Date(sneaker.bid_end);
+        const now = new Date();
+
+        // Show times
+        const bidTimes = document.getElementById("bidTimes");
+        bidTimes.innerHTML = `
+          <p>⏰ <strong>Bid Start:</strong> ${bidStart.toLocaleString()}</p>
+          <p>⏰ <strong>Bid End:</strong> ${bidEnd.toLocaleString()}</p>
+        `;
+
+        // Handle expired bidding
+        if (now < bidStart) {
+          document.getElementById("status").innerText = "⏳ Bidding has not started yet.";
+          disableForm();
+        } else if (now > bidEnd) {
+          document.getElementById("status").innerText = "❌ Bidding period has ended.";
+          disableForm();
+        }
+
+        // Back button
+        document.getElementById("backBtn").onclick = () => {
+          window.location.href = `product.html?id=${id}`;
+        };
+
+        // Form submission
+        document.getElementById("bidForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const amount = document.getElementById("amount").value;
+          const email = document.getElementById("email").value;
+          const wallet = document.getElementById("wallet").value;
+          const status = document.getElementById("status");
+
+          if (!option) {
+            status.innerText = "❌ Please select Delivery or Trade option.";
+            return;
+          }
+
+          try {
+            const res = await fetch(`${BACKEND_URL}/bid/${sku}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ amount, email, wallet, option })
+            });
+            const result = await res.json();
+            status.innerText = result.message || result.error;
+
+            if (res.ok) {
+              setTimeout(() => {
+                window.location.href = `product.html?id=${id}`;
+              }, 2000);
+            }
+          } catch (err) {
+            status.innerText = "❌ Error submitting bid.";
+          }
+        };
+      });
+
+    function disableForm() {
+      document.getElementById("amount").disabled = true;
+      document.getElementById("email").disabled = true;
+      document.getElementById("wallet").disabled = true;
+      document.getElementById("deliveryBtn").disabled = true;
+      document.getElementById("tradeBtn").disabled = true;
+      document.getElementById("submitBtn").disabled = true;
+    }
+
+    document.getElementById("deliveryBtn").onclick = () => {
+      option = "delivery";
+      toggleButtons();
+    };
+    document.getElementById("tradeBtn").onclick = () => {
+      option = "trade";
+      toggleButtons();
+    };
+
+    function toggleButtons() {
+      document.getElementById("deliveryBtn").classList.toggle("active", option === "delivery");
+      document.getElementById("tradeBtn").classList.toggle("active", option === "trade");
+    }
+  </script>
+</body>
+</html>

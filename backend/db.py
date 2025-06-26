@@ -10,3 +10,4 @@ client = MongoClient(MONGO_URI)
 # Use kicks_vault database and sneakers collection
 db = client["kicks_vault"]
 sneakers = db["sneakers"]
+bids = db["bids"]
