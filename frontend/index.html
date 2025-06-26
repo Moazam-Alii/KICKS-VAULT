@@ -8,18 +8,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-  <header>
-    <h1>KICKS-VAULT</h1>
-    <nav>
-      <div class="search-container">
-        <i class="fas fa-shoe-prints search-icon" onclick="toggleSearch()"></i>
-        <input type="text" id="searchBox" class="search-input" placeholder="Search sneakers..." oninput="suggestSneakers()" />
-        <div id="suggestions" class="search-suggestions"></div>
-      </div>
-      <a href="index.html" class="active">Marketplace</a>
-      <a href="add.html">Sell Your Kicks</a>
-    </nav>
-  </header>
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 0px 30px;">
+  <!-- Logo -->
+  <a href="index.html">
+    <img src="static/banner/logo.png" alt="KICKS-VAULT Logo" style="height: 120px;" />
+  </a>
+
+  <!-- Navigation -->
+  <nav style="display: flex; align-items: center; gap: 5px;padding-bottom: 0%;padding-left: 0%;">
+    <div class="search-container">
+      <i class="fas fa-shoe-prints search-icon" onclick="toggleSearch()"></i>
+      <input type="text" id="searchBox" class="search-input" placeholder="Search sneakers..." oninput="suggestSneakers()" />
+      <div id="suggestions" class="search-suggestions"></div>
+    </div>
+    <a href="index.html" class="active">Marketplace</a>
+    <a href="add.html">Sell Your Kicks</a>
+  </nav>
+</header>
+
 
   <main>
     <!-- 🔥 Banner Section -->
