@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://kicks-vault.onrender.com";
 
 let walletAddress = null;
 
