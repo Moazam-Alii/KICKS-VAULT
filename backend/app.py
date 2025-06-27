@@ -12,7 +12,7 @@ from .cnn_model import verify_sneaker
 from .mint import mint_nft_on_solana
 from .wallets_utils import transfer_ownership
 from flask_mail import Mail, Message
-from datetime import datetime, timezone
+from datetime import datetime, timezone,timedelta
 
 
 load_dotenv()
@@ -103,8 +103,10 @@ def upload_sneaker():
     bid_end = request.form.get('bid_end')
 
     try:
-        bid_start = datetime.fromisoformat(bid_start).astimezone(timezone.utc).isoformat()
-        bid_end = datetime.fromisoformat(bid_end).astimezone(timezone.utc).isoformat()
+        PAKISTAN_TZ = timezone(timedelta(hours=5))
+        bid_start = datetime.fromisoformat(bid_start).replace(tzinfo=PAKISTAN_TZ).astimezone(timezone.utc).isoformat()
+        bid_end = datetime.fromisoformat(bid_end).replace(tzinfo=PAKISTAN_TZ).astimezone(timezone.utc).isoformat()   
+    
 
     except Exception:
         return jsonify({"message": "Invalid datetime format"}), 400
