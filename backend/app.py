@@ -7,10 +7,10 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 import smtplib
-from db import sneakers, bids
-from cnn_model import verify_sneaker
-from mint import mint_nft_on_solana
-from wallets_utils import transfer_ownership
+from .db import sneakers, bids
+from .cnn_model import verify_sneaker
+from .mint import mint_nft_on_solana
+from .wallets_utils import transfer_ownership
 from flask_mail import Mail, Message
 from datetime import datetime, timezone
 
