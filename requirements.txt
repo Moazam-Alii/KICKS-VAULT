@@ -1,3 +1,9 @@
 Flask
 flask-cors
 pymongo
+solana
+python-dotenv
+bson
+Flask-Mail
+requests
+smtplib
